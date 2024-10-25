@@ -1,25 +1,102 @@
 package com.booleanuk;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Poker {
-    // Core
+    private static final Map<String, Integer> cardValues = new HashMap<>();
+
+    static {
+        cardValues.put("2", 2);
+        cardValues.put("3", 3);
+        cardValues.put("4", 4);
+        cardValues.put("5", 5);
+        cardValues.put("6", 6);
+        cardValues.put("7", 7);
+        cardValues.put("8", 8);
+        cardValues.put("9", 9);
+        cardValues.put("10", 10);
+        cardValues.put("J", 11);
+        cardValues.put("Q", 12);
+        cardValues.put("K", 13);
+        cardValues.put("A", 14);
+    }
+
     public String[] winningPair(String[] firstHand, String[] secondHand) {
-        // Implement the winningPair logic here and return the array containing the winning pair to make the tests pass.
-        // You can replace the following return value with something appropriate
-        return new String[]{"Replace me", "with something else"};
+        String[] pair1 = getPair(firstHand);
+        String[] pair2 = getPair(secondHand);
+
+        if (pair1.length == 0 && pair2.length == 0) {
+            return new String[]{};
+        } else if (pair1.length == 0) {
+            return pair2;
+        } else if (pair2.length == 0) {
+            return pair1;
+        } else {
+            return cardValues.get(pair1[0]) > cardValues.get(pair2[0]) ? pair1 : pair2;
+        }
+    }
+
+    private String[] getPair(String[] hand) {
+        if (hand[0].equals(hand[1])) {
+            return hand;
+        }
+        return new String[]{};
     }
 
     // Extension 1
     public String[] winningPairFromArray(String[][] hands) {
-        // Implement the winningPairFromArray logic here and return the array containing the winning pair to make the tests pass.
-        // You can replace the following return value with something appropriate
-        return new String[]{"Replace me", "with something else"};
+        String[] winningPair = new String[]{};
+        int highestValue = 0;
+
+        for (String[] hand : hands) {
+            String[] pair = getPair(hand);
+            if (pair.length > 0) {
+                int pairValue = cardValues.get(pair[0]);
+                if (pairValue > highestValue) {
+                    highestValue = pairValue;
+                    winningPair = pair;
+                }
+            }
+        }
+
+        return winningPair;
     }
 
     // Extension 2
     public String[] winningThreeCardHand(String[][] hands) {
-        // Implement the winningThreeCardHand logic here and return the array containing the winning hand to make the tests pass.
-        // You can replace the following return value with something appropriate
-        return new String[]{"Replace me", "with something else"};
+        String[] winningHand = new String[]{};
+        int highestValue = 0;
+        boolean hasThreeOfAKind = false;
+
+        for (String[] hand : hands) {
+            String[] threeOfAKind = getThreeOfAKind(hand);
+            String[] pair = getPair(hand);
+
+            if (threeOfAKind.length > 0) {
+                int value = cardValues.get(threeOfAKind[0]);
+                if (!hasThreeOfAKind || value > highestValue) {
+                    highestValue = value;
+                    winningHand = threeOfAKind;
+                    hasThreeOfAKind = true;
+                }
+            } else if (!hasThreeOfAKind && pair.length > 0) {
+                int value = cardValues.get(pair[0]);
+                if (value > highestValue) {
+                    highestValue = value;
+                    winningHand = pair;
+                }
+            }
+        }
+
+        return winningHand;
+    }
+
+    private String[] getThreeOfAKind(String[] hand) {
+        if (hand.length == 3 && hand[0].equals(hand[1]) && hand[1].equals(hand[2])) {
+            return hand;
+        }
+        return new String[]{};
     }
 
     // Extension 3
